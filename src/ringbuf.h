@@ -12,7 +12,6 @@
 #include <iostream>
 #include <cstring>
 #include <thread>
-#include <semaphore>
 #include <mutex>
  
 #define RING_SIZE           16777216
