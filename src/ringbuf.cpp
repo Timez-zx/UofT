@@ -128,9 +128,7 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
     if (messageBytes > RING_SIZE - distance) {
             return false;
     }
-    std::lock_guard<std::mutex> lock(Ring->mutex);
     while (Ring->ForwardTail[0].compare_exchange_weak(forwardTail, (forwardTail + messageBytes) % RING_SIZE) == false) {
-            std::this_thread::yield(); 
             forwardTail = Ring->ForwardTail[0];
             head = Ring->Head[0];
 
@@ -151,6 +149,7 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             if (messageBytes > RING_SIZE - distance) {
                     return false;
             }
+            std::this_thread::yield(); 
     }
 
     if (forwardTail + messageBytes <= RING_SIZE) {
@@ -162,8 +161,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
 
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
-                    std::this_thread::yield(); 
                     safeTail = Ring->SafeTail[0];
+                    std::this_thread::yield(); 
             }
     }
     else {
@@ -183,8 +182,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
 
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
-                    std::this_thread::yield(); 
                     safeTail = Ring->SafeTail[0];
+                    std::this_thread::yield(); 
             }
     }
     
