@@ -125,6 +125,6 @@ void testQ2(uint32_t numProducers) {
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() << "ms" << std::endl;
     std::chrono::duration<double> diff = endTime - startTime;
     std::cout << "Throughput: "
-            << NUM_MESSAGES / diff.count()
+            << NUM_MESSAGES*numProducers / diff.count()
             << " messages/s" << std::endl;
 }
