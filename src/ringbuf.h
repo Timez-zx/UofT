@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <iostream>
+#include <cstring>
  
 #define RING_SIZE           16777216
 #define FORWARD_DEGREE      1048576
