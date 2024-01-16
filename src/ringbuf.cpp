@@ -132,9 +132,6 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             forwardTail = Ring->ForwardTail[0];
             head = Ring->Head[0];
 
-            forwardTail = Ring->ForwardTail[0];
-            head = Ring->Head[0];
-
             if (forwardTail <= head) {
                     distance = forwardTail + RING_SIZE - head;
             }
@@ -149,7 +146,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             if (messageBytes > RING_SIZE - distance) {
                     return false;
             }
-            std::this_thread::yield(); 
+            // std::this_thread::yield(); 
+            std::this_thread::sleep_for(std::chrono::nanoseconds(100));
     }
 
     if (forwardTail + messageBytes <= RING_SIZE) {
@@ -162,7 +160,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    std::this_thread::yield(); 
+                    // std::this_thread::yield(); 
+                    // std::this_thread::sleep_for(std::chrono::nanoseconds(100));
             }
     }
     else {
@@ -183,7 +182,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    std::this_thread::yield(); 
+                    // std::this_thread::yield(); 
+                    // std::this_thread::sleep_for(std::chrono::nanoseconds(100));
             }
     }
     
