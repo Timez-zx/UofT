@@ -11,6 +11,9 @@
 #include <atomic>
 #include <iostream>
 #include <cstring>
+#include <thread>
+#include <semaphore>
+#include <mutex>
  
 #define RING_SIZE           16777216
 #define FORWARD_DEGREE      1048576
@@ -28,6 +31,7 @@ struct RingBuffer {
        Atomic<int> SafeTail[INT_ALIGNED];
        int Head[INT_ALIGNED];
        char Buffer[RING_SIZE];
+       std::mutex mutex;
 };
 
 RingBuffer* AllocateMessageBuffer(BufferT BufferAddress);
@@ -35,6 +39,8 @@ RingBuffer* AllocateMessageBuffer(BufferT BufferAddress);
 void DeallocateMessageBuffer(RingBuffer* Ring);
 
 bool InsertToMessageBuffer(RingBuffer* Ring, const BufferT CopyFrom, MessageSizeT MessageSize);
+
+bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSizeT MessageSize);
  
 bool FetchFromMessageBuffer(RingBuffer* Ring, BufferT CopyTo, MessageSizeT* MessageSize);
  

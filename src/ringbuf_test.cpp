@@ -46,7 +46,7 @@ void ProducerQ2(RingBuffer* ring, uint32_t id, uint32_t numProducers) {
     char message[MESSAGE_SIZE];
     for (int i = 0; i < NUM_MESSAGES; ++i) {
         *(int64_t*)message = i*numProducers + id;
-        while (!InsertToMessageBuffer(ring, message, MESSAGE_SIZE)) {
+        while (!InsertToMessageBufferQ2(ring, message, MESSAGE_SIZE)) {
             std::this_thread::yield();
         }
     }
