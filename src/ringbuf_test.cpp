@@ -74,7 +74,7 @@ void ConsumerQ2(RingBuffer* ring, uint32_t numProducers) {
                 ParseNextMessage(currentMessage, remainingSize, &messagePointer, &messageSize, &startOfNext, &remainingSize);
                 uint32_t producerId = *(int64_t*)messagePointer % numProducers;
                 if(*(int64_t*)messagePointer != receivedMessages[producerId]) {
-                    std::cout << "Expected " << receivedMessages[producerId] << " but got " << *(int64_t*)messagePointer << std::endl;
+                    std::cout << "Expected " << receivedMessages[producerId] << " but got " << *(int64_t*)messagePointer <<std::endl;
                     return;
                 }
                 receivedMessages[producerId] += numProducers;
