@@ -9,7 +9,7 @@
 #include <chrono>
 #include <vector>
 
-const int NUM_MESSAGES = 100000000;
+const int NUM_MESSAGES = 200000000;
 const int MESSAGE_SIZE = 8;
 
 void ProducerQ1(RingBuffer* ring);

@@ -10,6 +10,6 @@ using namespace std;
 
 int main() {
     // testQ1();
-    testQ2(8);
+    testQ2(2);
     return 0;
 }

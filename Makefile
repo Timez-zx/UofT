@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall -std=c++17 -O3
+CXXFLAGS=-Wall -std=c++17 
 SRC_DIR = src
 TARGET=main
 
