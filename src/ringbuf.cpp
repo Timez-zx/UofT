@@ -151,23 +151,21 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             if (messageBytes > RING_SIZE - distance) {
                     return false;
             }
-            // std::this_thread::yield(); 
-            // std::this_thread::sleep_for(std::chrono::nanoseconds(100));
+            std::this_thread::yield(); 
     }
 
 
     if (forwardTail + messageBytes <= RING_SIZE) {
+            while(forwardTail != Ring->SafeTail[0]){
+                    std::this_thread::yield(); 
+            }
             char* messageAddress = &Ring->Buffer[forwardTail];
-
             *((MessageSizeT*)messageAddress) = messageBytes;
-
             memcpy(messageAddress + sizeof(MessageSizeT), CopyFrom, MessageSize);
-
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    // std::this_thread::yield(); 
-                    // std::this_thread::sleep_for(std::chrono::nanoseconds(100));
+                    std::this_thread::yield(); 
             }
     }
     else {
@@ -188,8 +186,7 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    // std::this_thread::yield(); 
-                    // std::this_thread::sleep_for(std::chrono::nanoseconds(100));
+                    std::this_thread::yield(); 
             }
     }
     
@@ -206,15 +203,15 @@ bool FetchFromMessageBuffer(RingBuffer* Ring, BufferT CopyTo, MessageSizeT* Mess
             return false;
     }
 
-    if (forwardTail != safeTail) {
-            return false;
-    }
+    // if (forwardTail != safeTail) {
+    //         return false;
+    // }
 
     RingSizeT availBytes = 0;
     char* sourceBuffer1 = nullptr;
     char* sourceBuffer2 = nullptr;
 
-    if (safeTail > head) {
+    if (safeTail >= head) {
             availBytes = safeTail - head;
             *MessageSize = availBytes;
             sourceBuffer1 = &Ring->Buffer[head];
