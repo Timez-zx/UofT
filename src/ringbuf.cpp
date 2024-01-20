@@ -156,16 +156,15 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
 
 
     if (forwardTail + messageBytes <= RING_SIZE) {
-            while(forwardTail != Ring->SafeTail[0]){
-                    std::this_thread::yield(); 
-            }
+        //     while(forwardTail != Ring->SafeTail[0]){
+        //             std::this_thread::yield(); 
+        //     }
             char* messageAddress = &Ring->Buffer[forwardTail];
             *((MessageSizeT*)messageAddress) = messageBytes;
             memcpy(messageAddress + sizeof(MessageSizeT), CopyFrom, MessageSize);
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    std::this_thread::yield(); 
             }
     }
     else {
@@ -186,7 +185,6 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             int safeTail = Ring->SafeTail[0];
             while (Ring->SafeTail[0].compare_exchange_weak(safeTail, (safeTail + messageBytes) % RING_SIZE) == false) {
                     safeTail = Ring->SafeTail[0];
-                    std::this_thread::yield(); 
             }
     }
     
@@ -195,17 +193,18 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
 
 
 bool FetchFromMessageBuffer(RingBuffer* Ring, BufferT CopyTo, MessageSizeT* MessageSize) {
-    int forwardTail = Ring->ForwardTail[0];
     int safeTail = Ring->SafeTail[0];
+    int forwardTail = Ring->ForwardTail[0];
+//     int safeTail = Ring->SafeTail[0];
     int head = Ring->Head[0];
 
     if (forwardTail == head) {
             return false;
     }
 
-    // if (forwardTail != safeTail) {
-    //         return false;
-    // }
+    if (forwardTail != safeTail) {
+            return false;
+    }
 
     RingSizeT availBytes = 0;
     char* sourceBuffer1 = nullptr;
