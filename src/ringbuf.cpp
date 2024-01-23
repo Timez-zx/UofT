@@ -151,14 +151,10 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
             if (messageBytes > RING_SIZE - distance) {
                     return false;
             }
-            std::this_thread::yield(); 
     }
 
 
     if (forwardTail + messageBytes <= RING_SIZE) {
-        //     while(forwardTail != Ring->SafeTail[0]){
-        //             std::this_thread::yield(); 
-        //     }
             char* messageAddress = &Ring->Buffer[forwardTail];
             *((MessageSizeT*)messageAddress) = messageBytes;
             memcpy(messageAddress + sizeof(MessageSizeT), CopyFrom, MessageSize);
@@ -193,9 +189,8 @@ bool InsertToMessageBufferQ2(RingBuffer* Ring, const BufferT CopyFrom, MessageSi
 
 
 bool FetchFromMessageBuffer(RingBuffer* Ring, BufferT CopyTo, MessageSizeT* MessageSize) {
-    int safeTail = Ring->SafeTail[0];
     int forwardTail = Ring->ForwardTail[0];
-//     int safeTail = Ring->SafeTail[0];
+    int safeTail = Ring->SafeTail[0];
     int head = Ring->Head[0];
 
     if (forwardTail == head) {
